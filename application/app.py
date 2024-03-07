@@ -1,18 +1,25 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database.users import Base, User
+import secrets
 
 app = Flask(__name__)
+secret_key = secrets.token_hex(32)
+app.secret_key = secret_key
 
-engine = create_engine('sqlite:///application_database.db', connect_args={'check_same_thread': False}, echo=False)
+# Specify the correct path to the database file
+database_path = 'sqlite:///database/application_database.db'
+engine = create_engine(database_path, connect_args={'check_same_thread': False}, echo=False)
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
+
 @app.route('/')
 def index():
     return render_template('index.html')
+
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -23,28 +30,39 @@ def login():
     if user:
         return redirect(url_for('success'))
     else:
+        flash("Invalid username or password")
         return redirect(url_for('index'))
+
 
 @app.route('/register', methods=['POST'])
 def register():
     username = request.form['username']
     password = request.form['password']
 
+    # Check if password is at least 8 characters long
+    if len(password) < 8:
+        flash("Password must be at least 8 characters long!")
+        return redirect(url_for('index'))
+
     # Check if the username is already taken
     existing_user = session.query(User).filter_by(username=username).first()
     if existing_user:
-        return "Username already exists!"
+        flash("Username already exists!")
+        return redirect(url_for('index'))
 
     # Create a new user and add it to the database
     new_user = User(username=username, password=password)
     session.add(new_user)
     session.commit()
 
-    return redirect(url_for('success'))
+    flash("Registration successful! Please log in.")
+    return redirect(url_for('index'))
+
 
 @app.route('/success')
 def success():
     return "Operation successful!"
+
 
 if __name__ == '__main__':
     app.run(debug=True)
