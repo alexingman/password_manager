@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from database.users import Base, User
 import secrets
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', template_folder='templates')
 secret_key = secrets.token_hex(32)
 app.secret_key = secret_key
 
@@ -18,7 +18,7 @@ session = DBSession()
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('login.html')
 
 
 @app.route('/login', methods=['POST'])
@@ -39,15 +39,15 @@ def register():
     username = request.form['username']
     password = request.form['password']
 
-    # Check if password is at least 8 characters long
-    if len(password) < 8:
-        flash("Password must be at least 8 characters long!")
-        return redirect(url_for('index'))
-
     # Check if the username is already taken
     existing_user = session.query(User).filter_by(username=username).first()
     if existing_user:
         flash("Username already exists!")
+        return redirect(url_for('index'))
+
+    # Check if password is at least 8 characters long
+    if len(password) < 8:
+        flash("Password must be at least 8 characters long!")
         return redirect(url_for('index'))
 
     # Create a new user and add it to the database
