@@ -34,29 +34,32 @@ def login():
         return redirect(url_for('index'))
 
 
-@app.route('/register', methods=['POST'])
+@app.route('/register', methods=['GET', 'POST'])
 def register():
-    username = request.form['username']
-    password = request.form['password']
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
 
-    # Check if the username is already taken
-    existing_user = session.query(User).filter_by(username=username).first()
-    if existing_user:
-        flash("Username already exists!")
+        # Check if the username is already taken
+        existing_user = session.query(User).filter_by(username=username).first()
+        if existing_user:
+            flash("Username already exists!")
+            return redirect(url_for('register'))
+
+        # Check if password is at least 8 characters long
+        if len(password) < 8:
+            flash("Password must be at least 8 characters long!")
+            return redirect(url_for('register'))
+
+        # Create a new user and add it to the database
+        new_user = User(username=username, password=password)
+        session.add(new_user)
+        session.commit()
+
+        flash("Registration successful! Please log in.")
         return redirect(url_for('index'))
-
-    # Check if password is at least 8 characters long
-    if len(password) < 8:
-        flash("Password must be at least 8 characters long!")
-        return redirect(url_for('index'))
-
-    # Create a new user and add it to the database
-    new_user = User(username=username, password=password)
-    session.add(new_user)
-    session.commit()
-
-    flash("Registration successful! Please log in.")
-    return redirect(url_for('index'))
+    else:
+        return render_template('register.html')
 
 
 @app.route('/success')
