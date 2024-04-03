@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+</head>
+<body>
+    <h1>Your Password Groups</h1>
+
+    <!-- Flash messages display -->
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <div class="flash-message">
+              {% for message in messages %}
+                {{ message }}
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+    {% if user_groups %}
+        <ul>
+            {% for group in user_groups %}
+                <li>
+                    <a href="{{ url_for('view_group', group_id=group.group_id) }}">{{ group.name }}</a> - {{ group.description }}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No groups found. Start by creating a new one.</p>
+    {% endif %}
+    <button onclick="window.location.href='{{ url_for('create_group') }}'">Create New Group</button>
+</body>
+</html>

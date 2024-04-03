@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Group</title>
+</head>
+<body>
+    <h1>Group: {{ group.name }}</h1>
+    <p>Description: {{ group.description }}</p>
+    <h2>Passwords</h2>
+    {% for password in passwords %}
+        <div>
+            <p>Site: {{ password.site_name }}</p>
+            <p>Username: {{ password.username }}</p>
+            <!-- Don't display passwords plainly like this in a real app -->
+            <p>Password: {{ password.password }}</p>
+        </div>
+    {% else %}
+        <p>No passwords in this group.</p>
+    {% endfor %}
+</body>
+</html>
