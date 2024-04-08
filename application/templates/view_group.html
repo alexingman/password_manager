@@ -2,21 +2,53 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Group</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/view_group.css') }}">
 </head>
-<body>
+<body class="bg">
+
+<div class="container">
     <h1>Group: {{ group.name }}</h1>
     <p>Description: {{ group.description }}</p>
-    <h2>Passwords</h2>
-    {% for password in passwords %}
-        <div>
-            <p>Site: {{ password.site_name }}</p>
-            <p>Username: {{ password.username }}</p>
-            <!-- Don't display passwords plainly like this in a real app -->
-            <p>Password: {{ password.password }}</p>
+
+    <!-- Flash messages display -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="flash-message">
+            {% for message in messages %}
+            {{ message }}
+            {% endfor %}
         </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- List of passwords -->
+    {% if group.passwords %}
+    <ul class="password-list">
+        {% for password in group.passwords %}
+        <li class="password-item">
+            Site: {{ password.site_name }}<br>
+            Username: {{ password.username }}
+            <!-- Buttons for editing and deleting passwords -->
+            <div class="password-actions">
+                <a href="{{ url_for('edit_password', password_id=password.password_id) }}" class="button">Edit</a>
+                <a href="{{ url_for('delete_password', password_id=password.password_id) }}" class="button" onclick="return confirm('Are you sure?');">Delete</a>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
     {% else %}
-        <p>No passwords in this group.</p>
-    {% endfor %}
+    <p>No passwords found in this group.</p>
+    {% endif %}
+
+    <!-- Button to add a new password to the group -->
+    <button onclick="window.location.href='{{ url_for('add_password', group_id=group.group_id) }}'" class="button">Add New Password</button>
+
+    <!-- Back to dashboard button -->
+    <button onclick="window.location.href='{{ url_for('dashboard') }}'" class="button">Back to Dashboard</button>
+</div>
+
 </body>
 </html>
+

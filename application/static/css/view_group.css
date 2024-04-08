@@ -1,0 +1,50 @@
+body, html {
+    height: 100%;
+    margin: 0;
+}
+.bg {
+    background-image: url('../pictures/appBackground.webp'); /* Adjust if using a different general background */
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+.container {
+    background-color: rgba(255, 255, 255, 1);
+    border-radius: 10px;
+    padding: 20px;
+    width: 60%; /* Adjust based on content */
+    margin: 40px auto; /* Centering the container */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+.password-list {
+    list-style: none;
+    padding: 0;
+}
+.password-item {
+    background-color: #f2f2f2;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin: 10px 0;
+    padding: 10px;
+    text-align: left;
+}
+.edit-button, .delete-button, .edit-button:hover, .delete-button:hover {
+    padding: 5px 10px;
+    margin: 5px;
+    border: none;
+    cursor: pointer;
+    width: auto;
+    display: inline-block;
+}
+.edit-button { background-color: #FFC107; } /* Amber for edit */
+.delete-button { background-color: #F44336; } /* Red for delete */
+.edit-button:hover { background-color: #FFB300; } /* Darker amber on hover */
+.delete-button:hover { background-color: #E53935; } /* Darker red on hover */
+.flash-message, .info-message {
+    color: #333;
+    margin-bottom: 15px;
+    text-align: center;
+    font-weight: bold;
+}

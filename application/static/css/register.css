@@ -4,7 +4,7 @@ body, html {
 }
 
 .bg {
-    background-image: url('pictures/loginBackground.jpg');
+    background-image: url('../pictures/appBackground.webp');
     height: 100%;
     background-position: center;
     background-repeat: no-repeat;

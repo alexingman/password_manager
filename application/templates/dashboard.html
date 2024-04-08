@@ -1,35 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
 </head>
-<body>
+<body class="bg">
+
+<div class="container">
     <h1>Your Password Groups</h1>
 
-    <!-- Flash messages display -->
-        {% with messages = get_flashed_messages() %}
-          {% if messages %}
-            <div class="flash-message">
-              {% for message in messages %}
-                {{ message }}
-              {% endfor %}
-            </div>
-          {% endif %}
-        {% endwith %}
+    <!-- Button to create a new group -->
+    <button onclick="window.location.href='{{ url_for('create_group') }}'" class="button">Create New Group</button>
 
-    {% if user_groups %}
-        <ul>
-            {% for group in user_groups %}
-                <li>
-                    <a href="{{ url_for('view_group', group_id=group.group_id) }}">{{ group.name }}</a> - {{ group.description }}
-                </li>
+    <!-- Logout link -->
+    <a href="{{ url_for('logout') }}" class="button">Logout</a>
+
+    <!-- Flash messages display -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="flash-message">
+            {% for message in messages %}
+            {{ message }}
             {% endfor %}
-        </ul>
+        </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- List of groups -->
+    {% if user_groups %}
+    <ul class="group-list">
+        {% for group in user_groups %}
+        <li class="group-item">
+            <a href="{{ url_for('view_group', group_id=group.group_id) }}" class="group-link">
+                <div class="group-name">{{ group.name }}</div>
+                <div class="group-description">Description: {{ group.description }}</div>
+            </a>
+        </li>
+        {% endfor %}
+    </ul>
+
     {% else %}
-        <p>No groups found. Start by creating a new one.</p>
+    <p>No groups found. Start by creating a new one.</p>
     {% endif %}
-    <button onclick="window.location.href='{{ url_for('create_group') }}'">Create New Group</button>
+
+
+</div>
+
 </body>
 </html>
+

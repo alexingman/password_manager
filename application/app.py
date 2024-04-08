@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session as flask_session
+from flask import Flask, render_template, request, redirect, url_for, flash, session as flask_session, jsonify
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database.database_handler import Base, User, Group, Password
 import secrets
+import string
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 secret_key = secrets.token_hex(32)
@@ -77,7 +78,7 @@ def dashboard():
 @app.route('/view_group/<int:group_id>')
 def view_group(group_id):
     if 'user_id' not in flask_session:
-        return redirect(url_for('login'))
+        return redirect(url_for('index'))
 
     group = db_session.query(Group).filter_by(group_id=group_id, user_id=flask_session['user_id']).first()
     if not group:
@@ -88,17 +89,14 @@ def view_group(group_id):
     return render_template('view_group.html', group=group, passwords=passwords)
 
 
-from flask import request
-
-
 @app.route('/create_group', methods=['GET', 'POST'])
 def create_group():
     if 'user_id' not in flask_session:
-        return redirect(url_for('login'))
+        return redirect(url_for('index'))
 
     if request.method == 'POST':
         group_name = request.form['group_name']
-        group_description = request.form.get('group_description', '')  # Optional description
+        group_description = request.form.get('group_description', '')
 
         new_group = Group(name=group_name, description=group_description, user_id=flask_session['user_id'])
         db_session.add(new_group)
@@ -108,6 +106,75 @@ def create_group():
         return redirect(url_for('dashboard'))
 
     return render_template('create_group.html')
+
+@app.route('/logout')
+def logout():
+    flask_session.clear()
+    return redirect(url_for('index'))
+
+
+@app.route('/add_password/<int:group_id>', methods=['GET', 'POST'])
+def add_password(group_id):
+    if 'user_id' not in flask_session:
+        return redirect(url_for('login'))
+
+    # Assuming you have already validated that the group belongs to the user
+    if request.method == 'POST':
+        # Process the form data and add the new password
+        site_name = request.form['site_name']
+        site_url = request.form.get('site_url', '')
+        username = request.form['username']
+        password = request.form['password']  # Consider encrypting this before storage
+
+        new_password = Password(site_name=site_name, site_url=site_url, username=username, password=password,
+                                group_id=group_id)
+        db_session.add(new_password)
+        db_session.commit()
+
+        return redirect(url_for('view_group', group_id=group_id))
+
+    return render_template('add_password.html', group_id=group_id)
+
+@app.route('/generate_password')
+def generate_password():
+    length = 12
+    characters = string.ascii_letters + string.digits + string.punctuation
+    secure_password = ''.join(secrets.choice(characters) for i in range(length))
+    return jsonify(password=secure_password)
+
+
+@app.route('/edit_password/<int:password_id>', methods=['GET', 'POST'])
+def edit_password(password_id):
+    if 'user_id' not in flask_session:
+        return redirect(url_for('login'))
+
+    password = db_session.query(Password).filter_by(password_id=password_id).first()
+    if request.method == 'POST':
+        # Update password details based on form input
+        password.site_name = request.form['site_name']
+        password.username = request.form['username']
+        password.password = request.form['password']  # Consider securely handling this
+        db_session.commit()
+        return redirect(url_for('view_group', group_id=password.group_id))
+
+    # Render edit form with existing password details
+    return render_template('edit_password.html', password=password)
+
+
+@app.route('/delete_password/<int:password_id>')
+def delete_password(password_id):
+    if 'user_id' not in flask_session:
+        return redirect(url_for('login'))
+
+    password = db_session.query(Password).filter_by(password_id=password_id).first()
+    if password:
+        db_session.delete(password)
+        db_session.commit()
+        flash('Password deleted successfully.')
+    else:
+        flash('Password not found.')
+
+    return redirect(url_for('view_group', group_id=password.group_id))
 
 
 if __name__ == '__main__':
