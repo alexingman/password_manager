@@ -32,14 +32,13 @@
         {% endif %}
     {% endwith %}
 
-    <!-- List of passwords -->
-    {% if group.passwords %}
+    {% if passwords %}
     <ul class="password-list">
-        {% for password in group.passwords %}
+        {% for password in passwords %}
         <li class="password-item">
-            <div class="password-section"> <span class="label">Name: </span>{{ password.site_name }}</div>
+            <div class="password-section"><span class="label">Name:</span> {{ password.site_name }}</div>
             <div class="password-section">
-                <span class="label">URL: </span>
+                <span class="label">URL:</span>
                 {% if password.site_url.startswith('http://') or password.site_url.startswith('https://') %}
                 <a href="{{ password.site_url }}" target="_blank" rel="noopener noreferrer">{{ password.site_url }}</a>
                 {% else %}
@@ -58,11 +57,11 @@
             </div>
         </li>
         {% endfor %}
-
     </ul>
     {% else %}
     <p>No passwords found in this group.</p>
     {% endif %}
+
 
     <!-- Button to add a new password to the group -->
     <button onclick="window.location.href='{{ url_for('add_password', group_id=group.group_id) }}'" class="button">Add New Password</button>

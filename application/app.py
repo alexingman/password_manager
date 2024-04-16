@@ -1,13 +1,16 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session as flask_session, jsonify
+from flask_bcrypt import Bcrypt
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database.database_handler import Base, User, Group, Password
+from database.password_encrypting import encrypt_password, decrypt_password, decrypt_passwords
 import secrets
 import string
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
 secret_key = secrets.token_hex(32)
 app.secret_key = secret_key
+bcrypt = Bcrypt(app)
 
 # Specify the correct path to the database file
 database_path = 'sqlite:///database/application_database.db'
@@ -27,8 +30,8 @@ def login():
     username = request.form['username']
     password = request.form['password']
 
-    user = db_session.query(User).filter_by(username=username, password=password).first()
-    if user:
+    user = db_session.query(User).filter_by(username=username).first()
+    if user and bcrypt.check_password_hash(user.password, password):
         flask_session['user_id'] = user.user_id
         return redirect(url_for('dashboard'))
     else:
@@ -53,8 +56,11 @@ def register():
             flash("Password must be at least 8 characters long!")
             return redirect(url_for('register'))
 
+        # Hash the password before storing it in the database
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+
         # Create a new user and add it to the database
-        new_user = User(username=username, password=password)
+        new_user = User(username=username, password=hashed_password)
         db_session.add(new_user)
         db_session.commit()
 
@@ -86,7 +92,10 @@ def view_group(group_id):
         return redirect(url_for('index'))
 
     passwords = db_session.query(Password).filter_by(group_id=group.group_id).all()
-    return render_template('view_group.html', group=group, passwords=passwords)
+    decrypted_passwords = decrypt_passwords(passwords)
+
+    return render_template('view_group.html', group=group, passwords=decrypted_passwords)
+
 
 
 @app.route('/create_group', methods=['GET', 'POST'])
@@ -118,15 +127,13 @@ def add_password(group_id):
     if 'user_id' not in flask_session:
         return redirect(url_for('login'))
 
-    # Assuming you have already validated that the group belongs to the user
     if request.method == 'POST':
-        # Process the form data and add the new password
         site_name = request.form['site_name']
         site_url = request.form.get('site_url', '')
         username = request.form['username']
-        password = request.form['password']  # encrypt before storaging needed
-
-        new_password = Password(site_name=site_name, site_url=site_url, username=username, password=password,
+        raw_password = request.form['password']
+        encrypted_password = encrypt_password(raw_password)
+        new_password = Password(site_name=site_name, site_url=site_url, username=username, password=encrypted_password,
                                 group_id=group_id)
         db_session.add(new_password)
         db_session.commit()
@@ -148,20 +155,24 @@ def edit_password(password_id):
     if 'user_id' not in flask_session:
         return redirect(url_for('login'))
 
-    # Fetch the password details based on the password_id
     password = db_session.query(Password).filter_by(password_id=password_id).first()
+    if not password:
+        flash('Password not found.')
+        return redirect(url_for('dashboard'))
 
     if request.method == 'POST':
-        # Update the password details based on form input
         password.site_name = request.form['site_name']
         password.site_url = request.form.get('site_url', '')
         password.username = request.form['username']
-        password.password = request.form['password']  # Ensure to handle password securely
+        password.password = encrypt_password(request.form['password'])  # Re-encrypt the new or edited password
         db_session.commit()
+        flash('Password updated successfully.')
         return redirect(url_for('view_group', group_id=password.group_id))
+    else:
+        decrypted_password = decrypt_password(password.password)  # Decrypt the password for display
+        return render_template('edit_password.html', password=password, decrypted_password=decrypted_password)
 
-    # Render the form with existing password details
-    return render_template('edit_password.html', password=password)
+
 
 
 @app.route('/delete_password/<int:password_id>')
