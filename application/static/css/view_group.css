@@ -1,50 +1,83 @@
 body, html {
     height: 100%;
     margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
 }
-.bg {
-    background-image: url('../pictures/appBackground.webp'); /* Adjust if using a different general background */
-    height: 100%;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-}
+
 .container {
-    background-color: rgba(255, 255, 255, 1);
+    background-color: #fff;
     border-radius: 10px;
     padding: 20px;
-    width: 60%; /* Adjust based on content */
-    margin: 40px auto; /* Centering the container */
+    width: 80%;
+    margin: 40px auto;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
+
+.button, .copy-button {
+    background-color: #007BFF;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px;
+}
+
+.button:hover, .copy-button:hover {
+    background-color: #0056b3;
+}
+
 .password-list {
-    list-style: none;
+    list-style-type: none;
     padding: 0;
 }
+
 .password-item {
-    background-color: #f2f2f2;
-    border: 1px solid #ddd;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Divide the item into four equal parts */
+    gap: 10px; /* Space between sections */
+    background-color: #eef;
     border-radius: 5px;
     margin: 10px 0;
     padding: 10px;
-    text-align: left;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    align-items: center; /* Align items vertically */
 }
-.edit-button, .delete-button, .edit-button:hover, .delete-button:hover {
-    padding: 5px 10px;
-    margin: 5px;
-    border: none;
-    cursor: pointer;
-    width: auto;
-    display: inline-block;
+
+.password-section {
+    display: flex;
+    align-items: center; /* Center content vertically */
 }
-.edit-button { background-color: #FFC107; } /* Amber for edit */
-.delete-button { background-color: #F44336; } /* Red for delete */
-.edit-button:hover { background-color: #FFB300; } /* Darker amber on hover */
-.delete-button:hover { background-color: #E53935; } /* Darker red on hover */
-.flash-message, .info-message {
-    color: #333;
-    margin-bottom: 15px;
-    text-align: center;
+
+.password-actions {
+    grid-column: span 4; /* Actions span all columns */
+    display: flex;
+    justify-content: center; /* Position actions on the right */
+}
+
+.flash-message {
+    color: red;
+    margin: 10px 0;
     font-weight: bold;
 }
+
+input[type="password"] {
+    border: 1px solid #ccc;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+.label {
+    font-weight: bold;
+    margin-right: 5px;
+    color: #333;
+}
+
+.password-section a {
+    color: #007BFF;
+    text-decoration: underline;
+}
+
+

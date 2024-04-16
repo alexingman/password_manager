@@ -2,9 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>View Group</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/view_group.css') }}">
+    <script>
+        function copyPassword(passwordId) {
+            var copyText = document.getElementById(passwordId);
+            copyText.type = 'text'; // Temporarily reveal password to copy
+            copyText.select();
+            document.execCommand("copy");
+            copyText.type = 'password'; // Re-mask the password
+            alert("Password copied to clipboard"); // Optional feedback
+        }
+    </script>
 </head>
 <body class="bg">
 
@@ -28,15 +37,28 @@
     <ul class="password-list">
         {% for password in group.passwords %}
         <li class="password-item">
-            Site: {{ password.site_name }}<br>
-            Username: {{ password.username }}
-            <!-- Buttons for editing and deleting passwords -->
+            <div class="password-section"> <span class="label">Name: </span>{{ password.site_name }}</div>
+            <div class="password-section">
+                <span class="label">URL: </span>
+                {% if password.site_url.startswith('http://') or password.site_url.startswith('https://') %}
+                <a href="{{ password.site_url }}" target="_blank" rel="noopener noreferrer">{{ password.site_url }}</a>
+                {% else %}
+                <a href="http://{{ password.site_url }}" target="_blank" rel="noopener noreferrer">{{ password.site_url }}</a>
+                {% endif %}
+            </div>
+            <div class="password-section"><span class="label">Username:</span> {{ password.username }}</div>
+            <div class="password-section">
+                <span class="label">Password:</span>
+                <input type="password" value="{{ password.password }}" id="password{{ loop.index }}" readonly>
+                <button onclick="copyPassword('password{{ loop.index }}')">Copy</button>
+            </div>
             <div class="password-actions">
                 <a href="{{ url_for('edit_password', password_id=password.password_id) }}" class="button">Edit</a>
                 <a href="{{ url_for('delete_password', password_id=password.password_id) }}" class="button" onclick="return confirm('Are you sure?');">Delete</a>
             </div>
         </li>
         {% endfor %}
+
     </ul>
     {% else %}
     <p>No passwords found in this group.</p>
@@ -51,4 +73,6 @@
 
 </body>
 </html>
+
+
 

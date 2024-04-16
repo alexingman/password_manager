@@ -124,7 +124,7 @@ def add_password(group_id):
         site_name = request.form['site_name']
         site_url = request.form.get('site_url', '')
         username = request.form['username']
-        password = request.form['password']  # Consider encrypting this before storage
+        password = request.form['password']  # encrypt before storaging needed
 
         new_password = Password(site_name=site_name, site_url=site_url, username=username, password=password,
                                 group_id=group_id)
@@ -148,16 +148,19 @@ def edit_password(password_id):
     if 'user_id' not in flask_session:
         return redirect(url_for('login'))
 
+    # Fetch the password details based on the password_id
     password = db_session.query(Password).filter_by(password_id=password_id).first()
+
     if request.method == 'POST':
-        # Update password details based on form input
+        # Update the password details based on form input
         password.site_name = request.form['site_name']
+        password.site_url = request.form.get('site_url', '')
         password.username = request.form['username']
-        password.password = request.form['password']  # Consider securely handling this
+        password.password = request.form['password']  # Ensure to handle password securely
         db_session.commit()
         return redirect(url_for('view_group', group_id=password.group_id))
 
-    # Render edit form with existing password details
+    # Render the form with existing password details
     return render_template('edit_password.html', password=password)
 
 
@@ -175,6 +178,25 @@ def delete_password(password_id):
         flash('Password not found.')
 
     return redirect(url_for('view_group', group_id=password.group_id))
+
+@app.route('/delete_group/<int:group_id>', methods=['POST'])
+def delete_group(group_id):
+    if 'user_id' not in flask_session:
+        return redirect(url_for('login'))
+
+    group = db_session.query(Group).filter_by(group_id=group_id).first()
+    if not group:
+        flash("Group not found.", "error")
+        return redirect(url_for('dashboard'))
+
+    if group.passwords:
+        flash("Cannot delete a group that contains passwords.", "error")
+        return redirect(url_for('dashboard'))
+
+    db_session.delete(group)
+    db_session.commit()
+    flash("Group deleted successfully.", "success")
+    return redirect(url_for('dashboard'))
 
 
 if __name__ == '__main__':
