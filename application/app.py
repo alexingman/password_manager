@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session as flask_session, jsonify
 from flask_bcrypt import Bcrypt
+from flask_wtf.csrf import generate_csrf
+from flask_wtf import CSRFProtect
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database.database_handler import Base, User, Group, Password
@@ -8,9 +10,11 @@ import secrets
 import string
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
-secret_key = secrets.token_hex(32)
+secret_key = secrets.token_hex(64)
 app.secret_key = secret_key
+app.config['SECRET_KEY'] = secret_key
 bcrypt = Bcrypt(app)
+csrf = CSRFProtect(app)
 
 # Specify the correct path to the database file
 database_path = 'sqlite:///database/application_database.db'
@@ -56,7 +60,7 @@ def register():
             flash("Password must be at least 8 characters long!")
             return redirect(url_for('register'))
 
-        # Hash the password before storing it in the database
+        # Hash the password and username before storing it in the database
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
         # Create a new user and add it to the database
@@ -190,6 +194,7 @@ def delete_password(password_id):
 
     return redirect(url_for('view_group', group_id=password.group_id))
 
+
 @app.route('/delete_group/<int:group_id>', methods=['POST'])
 def delete_group(group_id):
     if 'user_id' not in flask_session:
@@ -208,6 +213,35 @@ def delete_group(group_id):
     db_session.commit()
     flash("Group deleted successfully.", "success")
     return redirect(url_for('dashboard'))
+
+
+@app.route('/delete_account', methods=['POST'])
+def delete_account():
+    if 'user_id' not in flask_session:
+        flash("You need to be logged in to delete your account.")
+        return redirect(url_for('login'))
+
+    user_id = flask_session['user_id']
+    user = db_session.query(User).filter_by(user_id=user_id).first()
+
+    if user:
+        if user.groups:
+            flash("Cannot delete account that contains password groups", "error")
+            return redirect(url_for('dashboard'))
+        db_session.delete(user)
+        db_session.commit()
+        flask_session.pop('user_id', None)  # Clear user session
+        flash("Your account has been successfully deleted.")
+        return redirect(url_for('index'))
+    else:
+        flash("User not found.")
+        return redirect(url_for('dashboard'))
+
+
+@app.context_processor
+def inject_csrf_token():
+    return dict(csrf_token=generate_csrf())
+
 
 
 if __name__ == '__main__':
