@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create New Group</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+</head>
+<body>
+<div class="bg">
+    <div class="container">
+        <h1>Create a New Password Group</h1>
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}"/>
+
+            <div class="form-group">
+                <label for="group_name">Group Name:</label>
+                <input type="text" name="group_name" required>
+            </div>
+            <div class="form-group">
+                <label for="group_description">Description (optional):</label>
+                <textarea name="group_description"></textarea>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="button">Create Group</button>
+                <button type="button" onclick="window.location.href='{{ url_for('dashboard') }}'" class="button">Back to Dashboard</button>
+            </div>
+        </form>
+    </div>
+</div>
+</body>
+</html>
+

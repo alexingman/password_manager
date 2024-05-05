@@ -3,7 +3,7 @@ body, html {
     margin: 0;
 }
 .bg {
-    background-image: url('pictures/loginBackground.jpg');
+    background-image: url('../pictures/loginBackground.webp');
     height: 100%;
     background-position: center;
     background-repeat: no-repeat;
@@ -44,7 +44,7 @@ body, html {
     margin: auto;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     position: relative;
-    top: 78%;
+    top: 80%;
     transform: translateY(-50%);
 }
 

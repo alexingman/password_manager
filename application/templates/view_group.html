@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Group</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/view_group.css') }}">
+    <script>
+        function copyPassword(passwordId) {
+            var copyText = document.getElementById(passwordId);
+            copyText.type = 'text'; // Temporarily reveal password to copy
+            copyText.select();
+            document.execCommand("copy");
+            copyText.type = 'password'; // Re-mask the password
+            alert("Password copied to clipboard"); // Optional feedback
+        }
+    </script>
+</head>
+<body class="bg">
+
+<div class="container">
+    <h1>Group: {{ group.name }}</h1>
+    <p>Description: {{ group.description }}</p>
+
+    <!-- Flash messages display -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="flash-message">
+            {% for message in messages %}
+            {{ message }}
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+
+    {% if passwords %}
+    <ul class="password-list">
+        {% for password in passwords %}
+        <li class="password-item">
+            <div class="password-section"><span class="label">Name:</span> {{ password.site_name }}</div>
+            <div class="password-section">
+                <span class="label">URL:</span>
+                {% if password.site_url.startswith('http://') or password.site_url.startswith('https://') %}
+                <a href="{{ password.site_url }}" target="_blank" rel="noopener noreferrer">{{ password.site_url }}</a>
+                {% else %}
+                <a href="http://{{ password.site_url }}" target="_blank" rel="noopener noreferrer">{{ password.site_url }}</a>
+                {% endif %}
+            </div>
+            <div class="password-section"><span class="label">Username:</span> {{ password.username }}</div>
+            <div class="password-section">
+                <span class="label">Password:</span>
+                <input type="password" value="{{ password.password }}" id="password{{ loop.index }}" readonly>
+                <button onclick="copyPassword('password{{ loop.index }}')">Copy</button>
+            </div>
+            <div class="password-actions">
+                <a href="{{ url_for('edit_password', password_id=password.password_id) }}" class="button">Edit</a>
+                <a href="{{ url_for('delete_password', password_id=password.password_id) }}" class="button" onclick="return confirm('Are you sure?');">Delete</a>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No passwords found in this group.</p>
+    {% endif %}
+
+
+    <!-- Button to add a new password to the group -->
+    <button onclick="window.location.href='{{ url_for('add_password', group_id=group.group_id) }}'" class="button">Add New Password</button>
+
+    <!-- Back to dashboard button -->
+    <button onclick="window.location.href='{{ url_for('dashboard') }}'" class="button">Back to Dashboard</button>
+</div>
+
+</body>
+</html>
+
+
+

@@ -1,0 +1,83 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+}
+
+.container {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    width: 80%;
+    margin: 40px auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.button, .copy-button {
+    background-color: #007BFF;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px;
+}
+
+.button:hover, .copy-button:hover {
+    background-color: #0056b3;
+}
+
+.password-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.password-item {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Divide the item into four equal parts */
+    gap: 10px; /* Space between sections */
+    background-color: #eef;
+    border-radius: 5px;
+    margin: 10px 0;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    align-items: center; /* Align items vertically */
+}
+
+.password-section {
+    display: flex;
+    align-items: center; /* Center content vertically */
+}
+
+.password-actions {
+    grid-column: span 4; /* Actions span all columns */
+    display: flex;
+    justify-content: center; /* Position actions on the right */
+}
+
+.flash-message {
+    color: red;
+    margin: 10px 0;
+    font-weight: bold;
+}
+
+input[type="password"] {
+    border: 1px solid #ccc;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+.label {
+    font-weight: bold;
+    margin-right: 5px;
+    color: #333;
+}
+
+.password-section a {
+    color: #007BFF;
+    text-decoration: underline;
+}
+
+

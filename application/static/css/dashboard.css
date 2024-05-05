@@ -1,0 +1,87 @@
+body, html {
+    height: 100%;
+    margin: 0;
+}
+.bg {
+    background-image: url('../pictures/appBackground.webp'); /* Adjust if using a different general background */
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+/* Adjusting the container for a more unified look */
+.container {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 10px;
+    padding: 20px;
+    width: 80%; /* Adjust width as needed */
+    margin: 20px auto; /* Center the container */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Styling for the group list */
+.group-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px; /* Add space between the title/description and the list */
+    text-align: left; /* Align items to the left */
+    display: inline-block; /* Center list in the container */
+    width: 100%; /* Use full width of the container */
+}
+
+.group-item {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+    transition: box-shadow 0.3s ease;
+    cursor: pointer; /* Indicates the item is clickable */
+}
+
+.group-item:hover {
+    box-shadow: 3px 3px 8px rgba(0,0,0,0.2); /* Enhanced shadow on hover for depth */
+}
+
+.group-link {
+    display: block; /* Make the link fill the entire list item */
+    padding: 15px; /* Padding inside each item for spacing */
+    color: #007BFF; /* Link color */
+    text-decoration: none; /* No underline */
+    height: 100%; /* Ensure it fills the parent */
+    width: 100%; /* Fill width */
+}
+
+.group-link:hover {
+    text-decoration: none; /* Ensure no underline on hover */
+}
+
+.group-name {
+    font-weight: bold; /* Emphasize the group name */
+    margin-bottom: 5px; /* Space between the name and description */
+}
+
+.group-description {
+    font-size: 0.9em; /* Slightly smaller font size for the description */
+    color: #555; /* Subtle color for the description text */
+}
+
+
+/* Reaffirming button styles for consistency */
+.button {
+    background-color: #007BFF;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px; /* Rounded corners for buttons */
+    cursor: pointer;
+    display: inline-block; /* Allow buttons to sit side by side */
+    margin-top: 20px; /* Space above the button */
+}
+
+.button:hover {
+    background-color: #0056b3;
+}
+
+
