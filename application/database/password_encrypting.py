@@ -5,18 +5,19 @@ from cryptography.hazmat.backends import default_backend
 from base64 import urlsafe_b64encode, urlsafe_b64decode
 import os
 
-#I stored this AES key securely as system environment variable
-static_key = os.getenv('AES_256_KEY')
-if static_key is None:
-    raise ValueError("AES_256_KEY is not set in the environment variables")
+# I stored this AES key securely as system environment variable
+# static_key = os.getenv('AES_256_KEY')
+# if static_key is None:
+    # raise ValueError("AES_256_KEY is not set in the environment variables")
 
 
 #For testing program you can use this already generated key below
 #so you don't need to set environment variable. !THIS IS NOT SECURE WAY!
 
-#static_key = '06b4ad939051d0c46892f7a753fab6c2fcbb2622cef82acbade161df461accca'
+static_key = '06b4ad939051d0c46892f7a753fab6c2fcbb2622cef82acbade161df461accca'
 
 
+# AES-256 key generating
 def generate_key(password: str, salt: bytes, iterations: int = 100000):
     kdf = PBKDF2HMAC(
         algorithm=hashes.SHA256(),
@@ -28,6 +29,7 @@ def generate_key(password: str, salt: bytes, iterations: int = 100000):
     return kdf.derive(password.encode())
 
 
+# AES-256 Encrypting function
 def encrypt_password(message: str, password: str = static_key):
     salt = os.urandom(16)
     password_key = generate_key(password, salt)
@@ -38,6 +40,7 @@ def encrypt_password(message: str, password: str = static_key):
     return urlsafe_b64encode(salt + iv + encrypted_data).decode('utf-8')
 
 
+# Single password encrypting
 def decrypt_password(token: str, password: str = static_key):
     token = urlsafe_b64decode(token.encode('utf-8'))
     salt = token[:16]
@@ -50,6 +53,7 @@ def decrypt_password(token: str, password: str = static_key):
     return decrypted_data.decode('utf-8')
 
 
+# Encrypt function for multiple password
 def decrypt_passwords(passwords):
     decrypted_passwords = []
     for p in passwords:
