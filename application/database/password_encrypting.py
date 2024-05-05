@@ -1,6 +1,5 @@
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives import hashes
-from cryptography.hazmat.primitives.kdf.scrypt import Scrypt
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
 from base64 import urlsafe_b64encode, urlsafe_b64decode
@@ -15,7 +14,7 @@ if static_key is None:
 #For testing program you can use this already generated key below
 #so you don't need to set environment variable. !THIS IS NOT SECURE WAY!
 
-#key = '06b4ad939051d0c46892f7a753fab6c2fcbb2622cef82acbade161df461accca'
+#static_key = '06b4ad939051d0c46892f7a753fab6c2fcbb2622cef82acbade161df461accca'
 
 
 def generate_key(password: str, salt: bytes, iterations: int = 100000):
